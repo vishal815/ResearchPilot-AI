@@ -115,6 +115,148 @@ def academic_heading(text: str, style, rule_color=DEEP_BLUE, rule_width=1.1):
     return KeepTogether(flow)
 
 
+def plotly_json_to_png_matplotlib(chart_json: str) -> bytes:
+    """
+    Convert a Plotly figure JSON to PNG using matplotlib.
+    Works without kaleido — pure Python, works in any Docker container.
+    Handles bar charts, line/area charts, pie/donut, gauge, scatter.
+    """
+    import matplotlib
+    matplotlib.use("Agg")           # non-interactive backend, safe in Docker
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    import numpy as np
+
+    data = json.loads(chart_json)
+    traces = data.get("data", [])
+    layout = data.get("layout", {})
+    title  = layout.get("title", {})
+    title_text = title.get("text", "") if isinstance(title, dict) else str(title)
+
+    # Strip plotly icon prefix (📊 etc.) from title
+    title_text = re.sub(r"^[^\w\s]+\s*", "", title_text).strip()
+
+    COLORS = ["#6366f1","#34d399","#f59e0b","#ef4444","#06b6d4",
+              "#8b5cf6","#10b981","#f97316","#a78bfa","#ec4899"]
+
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    fig.patch.set_facecolor("#ffffff")
+    ax.set_facecolor("#f8fafc")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#cbd5e1")
+    ax.spines["bottom"].set_color("#cbd5e1")
+    ax.tick_params(colors="#475569", labelsize=9)
+    ax.grid(axis="y", color="#e2e8f0", linewidth=0.6, linestyle="--")
+    ax.set_axisbelow(True)
+
+    plotted = False
+
+    for i, trace in enumerate(traces):
+        ttype = trace.get("type", "scatter")
+        color = COLORS[i % len(COLORS)]
+
+        if ttype == "bar":
+            x = trace.get("x") or trace.get("y") or []
+            y = trace.get("y") or trace.get("x") or []
+            orient = trace.get("orientation", "v")
+            if orient == "h":
+                bars = ax.barh([str(v)[:30] for v in x], y, color=color, alpha=0.85)
+                ax.set_xlabel(layout.get("xaxis", {}).get("title", {}).get("text",""), fontsize=9)
+                # value labels
+                for bar in bars:
+                    w = bar.get_width()
+                    ax.text(w * 1.01, bar.get_y() + bar.get_height()/2,
+                            f"{w:,.1f}", va="center", fontsize=7, color="#334155")
+            else:
+                xs = list(range(len(x)))
+                ax.bar(xs, y, color=color, alpha=0.85)
+                ax.set_xticks(xs)
+                ax.set_xticklabels([str(v)[:18] for v in x], rotation=30, ha="right", fontsize=8)
+            plotted = True
+
+        elif ttype == "scatter":
+            x = trace.get("x", [])
+            y = trace.get("y", [])
+            mode = trace.get("mode", "lines")
+            name = trace.get("name", "")
+            fill = trace.get("fill", "")
+            if "lines" in mode or fill:
+                ax.plot(x, y, color=color, linewidth=2, label=name, marker="o",
+                        markersize=4, markerfacecolor=color)
+                if fill:
+                    ax.fill_between(range(len(y)), y, alpha=0.08, color=color)
+            if "markers" in mode and "lines" not in mode:
+                sizes = trace.get("marker", {}).get("size", 10)
+                if isinstance(sizes, list):
+                    sizes = [max(20, min(300, s*s)) for s in sizes]
+                ax.scatter(range(len(x)), y, s=sizes, color=color, alpha=0.7, label=name)
+            plotted = True
+
+        elif ttype in ("pie", "sunburst"):
+            labels = trace.get("labels", [])
+            values = trace.get("values", [])
+            hole   = trace.get("hole", 0)
+            if labels and values:
+                wedge_colors = COLORS[:len(labels)]
+                wedges, texts, autotexts = ax.pie(
+                    values, labels=[str(l)[:20] for l in labels],
+                    colors=wedge_colors, autopct="%1.1f%%",
+                    startangle=90, pctdistance=0.75,
+                    wedgeprops={"linewidth": 1, "edgecolor": "white"}
+                )
+                for t in texts:    t.set_fontsize(8)
+                for t in autotexts: t.set_fontsize(7)
+                if hole > 0:
+                    centre = plt.Circle((0, 0), hole, color="white")
+                    ax.add_artist(centre)
+                plotted = True
+
+        elif ttype == "indicator":
+            # Render as a large number in the centre
+            val = trace.get("value", 0)
+            suffix = trace.get("number", {}).get("suffix", "")
+            ax.text(0.5, 0.55, f"{val:.1f}{suffix}", transform=ax.transAxes,
+                    ha="center", va="center", fontsize=38, fontweight="bold",
+                    color="#6366f1")
+            title_inner = trace.get("title", {}).get("text", "")
+            if title_inner:
+                ax.text(0.5, 0.25, title_inner, transform=ax.transAxes,
+                        ha="center", va="center", fontsize=10, color="#64748b")
+            ax.axis("off")
+            plotted = True
+
+    if not plotted:
+        ax.text(0.5, 0.5, "Chart data unavailable",
+                transform=ax.transAxes, ha="center", va="center",
+                fontsize=11, color="#94a3b8")
+        ax.axis("off")
+
+    # Title
+    if title_text:
+        fig.suptitle(title_text, fontsize=11, fontweight="bold",
+                     color="#1e3a5f", y=0.98)
+
+    # Legend (for multi-trace)
+    if len(traces) > 1 and any(t.get("type") not in ("pie","indicator") for t in traces):
+        ax.legend(fontsize=8, loc="upper right", framealpha=0.6)
+
+    # Y-axis label
+    yaxis = layout.get("yaxis", {})
+    ylabel = yaxis.get("title", {})
+    if isinstance(ylabel, dict): ylabel = ylabel.get("text","")
+    if ylabel: ax.set_ylabel(str(ylabel), fontsize=9, color="#475569")
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight",
+                facecolor="#ffffff")
+    plt.close(fig)
+    buf.seek(0)
+    return buf.read()
+
+
 def chart_image_flowable(png_bytes: bytes, max_width_in: float = 6.4):
     """
     Converts chart PNG bytes into a properly-sized ReportLab Image flowable,
@@ -128,7 +270,6 @@ def chart_image_flowable(png_bytes: bytes, max_width_in: float = 6.4):
 
     target_w = max_width_in * inch
     target_h = target_w * aspect
-    # Cap height so a single chart never exceeds ~40% of page height
     max_h = 3.6 * inch
     if target_h > max_h:
         target_h = max_h
@@ -140,38 +281,23 @@ def chart_image_flowable(png_bytes: bytes, max_width_in: float = 6.4):
 
 def render_charts_for_section(chart_specs, section_key, styles):
     """
-    Returns a list of flowables for any charts tagged with this section_key.
-    section_key examples: 'statistics', 'key_findings'
+    Returns a list of flowables for charts matching this section_key.
+    Uses matplotlib (no kaleido needed) — works in any Docker environment.
     """
     flowables = []
     matched = [c for c in chart_specs if c.get("section") == section_key]
     if not matched:
         return flowables
 
-    try:
-        import plotly.graph_objects as go
-        import plotly.io as pio
-    except ImportError:
-        flowables.append(Paragraph(
-            "<i>[Chart unavailable — plotly not installed]</i>", styles["RPCaption"]
-        ))
-        return flowables
-
     for spec in matched:
         try:
-            fig = go.Figure(json.loads(spec["json"]))
-            fig.update_layout(
-                plot_bgcolor="#ffffff", paper_bgcolor="#ffffff",
-                font=dict(color="#1e293b", size=12),
-                margin=dict(l=40, r=30, t=50, b=40),
-            )
-            png_bytes = pio.to_image(fig, format="png", width=900, height=480, scale=2)
+            png_bytes = plotly_json_to_png_matplotlib(spec["json"])
             flowables.extend(chart_image_flowable(png_bytes))
             if spec.get("caption"):
                 flowables.append(Paragraph(clean(spec["caption"]), styles["RPCaption"]))
-        except Exception:
+        except Exception as e:
             flowables.append(Paragraph(
-                "<i>[Chart could not be rendered]</i>", styles["RPCaption"]
+                f"<i>[Chart rendering error: {str(e)[:80]}]</i>", styles["RPCaption"]
             ))
     return flowables
 
@@ -376,12 +502,7 @@ def generate_pdf(report, query, quality_score, citations,
         story.append(academic_heading("Additional Data Visualizations", styles["RPHeading2"]))
         for spec in leftover:
             try:
-                import plotly.graph_objects as go, plotly.io as pio
-                fig = go.Figure(json.loads(spec["json"]))
-                fig.update_layout(plot_bgcolor="#ffffff", paper_bgcolor="#ffffff",
-                                  font=dict(color="#1e293b", size=12),
-                                  margin=dict(l=40, r=30, t=50, b=40))
-                png_bytes = pio.to_image(fig, format="png", width=900, height=480, scale=2)
+                png_bytes = plotly_json_to_png_matplotlib(spec["json"])
                 story.extend(chart_image_flowable(png_bytes))
                 story.append(Paragraph(clean(spec["caption"]), styles["RPCaption"]))
             except Exception:

@@ -1,32 +1,14 @@
-# ResearchPilot AI — Python dependencies
-# Install: pip install -r requirements.txt
-
-# Core LangGraph stack
 langgraph>=0.2.0
 langchain>=0.3.0
 langchain-core>=0.3.0
-
-# LLM providers (use at least one)
-langchain-google-genai>=2.0.0    # Gemini
-langchain-groq>=0.2.0            # Groq (recommended — faster, free)
-
-# Web search
+langchain-google-genai>=2.0.0
+langchain-groq>=0.2.0
 tavily-python>=0.3.0
-
-# UI
 streamlit>=1.35.0
-
-# Data & charts
 plotly>=5.20.0
 pandas>=2.0.0
-
-# PDF generation (ReportLab engine)
 reportlab>=4.2.0
-kaleido==0.2.1
 pillow>=10.0.0
-
-# Env & utilities
+matplotlib>=3.8.0
 python-dotenv>=1.0.0
-
-# Optional — LangSmith tracing
 langsmith>=0.1.0
