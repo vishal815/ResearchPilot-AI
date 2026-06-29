@@ -18,8 +18,7 @@ ResearchPilot AI runs a coordinated team of specialised AI agents — each with 
 [![ReportLab](https://img.shields.io/badge/PDF-ReportLab-1E3A5F)](https://www.reportlab.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
 
-[🚀 Test_Live Demo]( https://researchpilot-ai-production.up.railway.app/) · [🤗 Hugging Face](https://huggingface.co/spaces/Visal9252/ResearchPilot-AI) · [🎥 Demo Video](https://drive.google.com/file/d/1bq21B3Nqx_ZJ4NzMV6WsZn6drlKLSAi1/view?usp=drive_link) · [📄 Report Sample]([Untitled.pdf](https://github.com/user-attachments/files/29449600/Untitled.pdf)
-) · [👨‍💻 Portfolio](https://vishal-lazrus-portfolio.vercel.app/)
+[🚀 Test_Live Demo (Hosted on Railway) ]( https://researchpilot-ai-production.up.railway.app/) · [🤗Hosted on Hugging Face ](https://huggingface.co/spaces/Visal9252/ResearchPilot-AI) · [🎥 Demo Video](https://drive.google.com/file/d/1bq21B3Nqx_ZJ4NzMV6WsZn6drlKLSAi1/view?usp=drive_link) · [👨‍💻 Portfolio](https://vishal-lazrus-portfolio.vercel.app/)
 
 </div>
 
@@ -396,7 +395,4 @@ MIT License — free to use, modify, and distribute with attribution.
 *Built by Vishal Lazrus during AI Internship at Infosys, June 2026*
 
 </div>
-<img width="440" height="437" alt="live_hosted png" src="https://github.com/user-attachments/assets/714dec8e-031e-4eba-b048-969891e8a43b" />
-<img width="437" height="436" alt="Github_QR png" src="https://github.com/user-attachments/assets/1952f869-7455-4c51-9656-6f675f817c5a" />
-
 
