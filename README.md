@@ -191,6 +191,38 @@ ResearchPilot AI/                   ← root folder
 All agents share data through the **Virtual File System** — a `Dict[str, str]` inside LangGraph state. Zero disk I/O.
 
 ---
+## 🔍 LangSmith Execution Trace
+
+Gain complete visibility into every stage of the **ResearchPilot AI** multi-agent workflow using **LangSmith**. Each research request is fully traced, making it easy to inspect execution, debug agent behavior, analyze latency, and monitor LLM interactions.
+
+<div align="center">
+<img width="1801" height="852" alt="langsmith1" src="https://github.com/user-attachments/assets/8838e807-63e4-4004-a080-869a891e0778" />
+<img width="1790" height="860" alt="langsmith2" src="https://github.com/user-attachments/assets/6cd4648d-2e85-4023-a5c1-3a39f8e67367" />
+
+
+
+</div>
+
+### ✨ What the Trace Shows
+
+- 🧠 **Planner** detects the research domain and creates structured tasks.
+- 🔀 **Router** dynamically selects only the required specialist agents.
+- ⚙️ **Workers** execute conditionally (Research, Statistics, Domain Expert, Fact Checker, References).
+- 📂 **Virtual File System (VFS)** stores and shares intermediate outputs across agents.
+- 📈 **Visualization** generates interactive Plotly charts without additional LLM calls.
+- ✍️ **Writer** synthesizes all agent outputs into a structured research report.
+- 🏆 **Quality Gate** evaluates report quality and automatically retries if necessary.
+- 🖼️ **Cover Generator** creates the final SVG cover card with the actual quality score.
+
+> **Benefits**
+>
+> - 🔍 End-to-end execution visibility
+> - 📊 Performance and latency monitoring
+> - 🐞 Faster debugging of multi-agent workflows
+> - 🔄 Easy inspection of prompts, responses, and state transitions
+> - 🚀 Production-ready observability powered by LangSmith
+
+---
 
 ## 📊 The Six Chart Types
 
@@ -374,6 +406,7 @@ MIT License — free to use, modify, and distribute with attribution.
 ## 🖥 UI Screenshots
 <img width="1878" height="916" alt="Home png" src="https://github.com/user-attachments/assets/a6b3e244-c1d8-459c-9766-627c78fb909d" />
 <img width="1913" height="920" alt="Pipeline png" src="https://github.com/user-attachments/assets/eacf76e8-076d-4e39-9c01-4847d9fb5466" />
+<img width="1022" height="552" alt="Screenshot 2026-06-23 093037" src="https://github.com/user-attachments/assets/ddb061e9-d546-476d-a0c9-33d079398d72" />
 <img width="1301" height="847" alt="Charts png" src="https://github.com/user-attachments/assets/0cbfaa33-6473-4575-aa48-c725b0c30b7f" />
 <img width="1902" height="822" alt="Report png" src="https://github.com/user-attachments/assets/97eb441b-fc69-46e2-ae90-5b6f369b7c06" />
 <img width="1070" height="731" alt="PDF png" src="https://github.com/user-attachments/assets/d73cfd02-8ea5-4348-ac2f-761b6a8c83e0" />
