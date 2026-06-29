@@ -1,4 +1,6 @@
 <div align="center">
+<img width="1774" height="887" alt="ChatGPT Image Jun 29, 2026, 08_59_40 AM" src="https://github.com/user-attachments/assets/ac50c3b9-c3a5-4be2-8b97-b49e46600272" />
+
 
 # 🧭 ResearchPilot AI
 
@@ -16,7 +18,8 @@ ResearchPilot AI runs a coordinated team of specialised AI agents — each with 
 [![ReportLab](https://img.shields.io/badge/PDF-ReportLab-1E3A5F)](https://www.reportlab.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
 
-[🚀 Live Demo](#) · [📄 Report Sample](#) · [👨‍💻 Portfolio](https://vishal-lazrus-portfolio.vercel.app/)
+[🚀 Test_Live Demo]( https://researchpilot-ai-production.up.railway.app/) · [🤗 Hugging Face](https://huggingface.co/spaces/Visal9252/ResearchPilot-AI) · [🎥 Demo Video](https://drive.google.com/file/d/1bq21B3Nqx_ZJ4NzMV6WsZn6drlKLSAi1/view?usp=drive_link) · [📄 Report Sample]([Untitled.pdf](https://github.com/user-attachments/files/29449600/Untitled.pdf)
+) · [👨‍💻 Portfolio](https://vishal-lazrus-portfolio.vercel.app/)
 
 </div>
 
@@ -60,6 +63,9 @@ The system produces:
 
 > This is not a chatbot wrapper. It implements the **planner → router → workers → critic** pattern used in production agentic AI systems.
 
+<img width="1536" height="1024" alt="04_Workflow_Diagram svg" src="https://github.com/user-attachments/assets/a337f339-50bf-4246-b14d-cb2553dd7c52" />
+
+
 ### Who is this for?
 
 | 🎓 Students | 💼 Professionals | 🧑‍💻 Developers |
@@ -86,106 +92,19 @@ The system produces:
 
 > **Exact node execution order as wired in `graph/graph_builder.py`:**
 
-```
-                    ┌─────────────────────────────────┐
-                    │         USER QUERY               │
-                    └────────────────┬────────────────┘
-                                     │
-                                     ▼
-                          ┌──────────────────┐
-                          │    🧠 PLANNER    │
-                          │                  │
-                          │ • Detects domain │
-                          │ • Builds 3 tasks │
-                          └────────┬─────────┘
-                                   │
-                                   ▼
-                          ┌──────────────────┐
-                          │    🔀 ROUTER     │
-                          │                  │
-                          │ Single LLM call  │
-                          │ → active_agents  │
-                          │   list in state  │
-                          └────────┬─────────┘
-                                   │
-                                   ▼
-     ┌─────────────────────────────────────────────────────────┐
-     │                  ⚙️ WORKERS NODE                        │
-     │           Only activated agents run                      │
-     │                                                          │
-     │  ┌────────────┐  ┌────────────┐  ┌──────────────────┐   │
-     │  │ 🔍Research │  │ 📊Stats    │  │ 🎓Domain Expert  │   │
-     │  │            │  │            │  │                  │   │
-     │  │ 3 Tavily   │  │ Structured │  │ Persona prompt   │   │
-     │  │ searches   │  │ JSON →     │  │ per domain       │   │
-     │  │ → LLM      │  │ chart data │  │                  │   │
-     │  └─────┬──────┘  └─────┬──────┘  └────────┬─────────┘   │
-     │        │               │                   │             │
-     │  ┌─────┴──────┐  ┌─────┴──────┐           │             │
-     │  │ ✅Fact     │  │ 📖Refs     │           │             │
-     │  │ Checker    │  │            │           │             │
-     │  │ Claim-by-  │  │ APA format │           │             │
-     │  │ claim      │  │ citations  │           │             │
-     │  └─────┬──────┘  └─────┬──────┘           │             │
-     │        │               │                   │             │
-     │        └───────────────┴──────┬────────────┘             │
-     │                    Virtual File System                    │
-     │              (shared dict living in state)                │
-     └───────────────────────────┬─────────────────────────────┘
-                                 │
-                                 ▼
-                      ┌──────────────────┐
-                      │  📈 VISUALIZATION │
-                      │                  │
-                      │ Statistics JSON  │
-                      │ → 6 Plotly charts│
-                      │ (no LLM call)    │
-                      └────────┬─────────┘
-                               │
-                               ▼
-                      ┌──────────────────┐
-                      │   ✍️ WRITER      │
-                      │                  │
-                      │ Reads all 5 VFS  │
-                      │ files → builds   │
-                      │ final report     │
-                      └────────┬─────────┘
-                               │
-                               ▼
-                      ┌──────────────────┐
-             ┌────────┤  🏆 QUALITY GATE │◄────────────────────┐
-             │        │                  │                      │
-             │        │ LLM scores 0-10  │                      │
-             │        └────────┬─────────┘                      │
-             │                 │                                 │
-             │    score ≥ 7    │    score < 7 (max 2 retries)    │
-             │        ┌────────┘        └──────────────────────► Writer
-             │        ▼
-             │ ┌──────────────────┐
-             │ │   🖼️ COVER       │
-             │ │                  │
-             │ │ SVG card with    │
-             │ │ real score baked │
-             │ │ in (runs last)   │
-             │ └────────┬─────────┘
-             │          │
-             └──────────┘
-                        │
-                        ▼
-                    STREAMLIT UI
-          ┌────────────────────────────────┐
-          │ 🔬 Research  │ 📊 Data&Charts  │
-          │ 📖 References│ 📄 Report       │
-          │              │ ⏱️ Trace        │
-          └────────────────────────────────┘
-                 MD · CSV · PDF downloads
-```
+<img width="1536" height="1024" alt="03_System_Architecture svg" src="https://github.com/user-attachments/assets/20d4012c-9092-41fa-b462-aab3179038fe" />
+
+> **📂 Virtual File System**
+<img width="1536" height="1024" alt="11  Virtual File System (VFS)" src="https://github.com/user-attachments/assets/ef70911e-c51a-457d-b898-3d88bd74ee7d" />
+
 
 ---
 
 ## ⚡ How It Works — Real Example
 
 **Query typed:** `"Impact of AI on healthcare market growth: adoption rates, investment trends and future outlook"`
+<img width="1024" height="1536" alt="07_Dry_Run svg" src="https://github.com/user-attachments/assets/e408e1f4-50e5-45f5-8643-d6a5a3ac6c8a" />
+
 
 | Step | Node | What happens |
 |---|---|---|
@@ -241,7 +160,7 @@ ResearchPilot AI/                   ← root folder
 │                                      embeds charts under matching headings
 │
 ├── ui/
-│   └── app.py                      ← Single-page Streamlit UI (~800 lines)
+│   └── app.py                      ← Single-page Streamlit UI 
 │                                      st.session_state caches results so
 │                                      download clicks don't re-run the pipeline
 │
@@ -252,7 +171,7 @@ ResearchPilot AI/                   ← root folder
 ├── main.py                         ← Terminal test runner (no UI)
 ├── app.py                          ← HF Spaces entry point
 ├── requirements.txt
-├── .env.example                    ← API key template
+├── .env                    ← API key template
 ├── .gitignore                      ← Excludes .env, __pycache__, *.pdf
 └── README.md
 ```
@@ -260,6 +179,7 @@ ResearchPilot AI/                   ← root folder
 ---
 
 ## 🤖 The Five Agents
+<img width="1536" height="1024" alt="05_Workers_Node svg" src="https://github.com/user-attachments/assets/80b46739-1681-439d-a753-00c72825deec" />
 
 | Agent | File | Activates when | What it produces |
 |---|---|---|---|
@@ -449,6 +369,7 @@ git push hf main
 ### Step 5 — Wait for Build
 
 HF Spaces shows a build log. The first build takes ~3-5 minutes (downloads dependencies). After that, code-only pushes rebuild in ~60 seconds.
+<img width="1024" height="1536" alt="09_Deployment svg" src="https://github.com/user-attachments/assets/287a0d95-78bf-423d-9073-fe3dadb9c93a" />
 
 ---
 
@@ -489,12 +410,8 @@ HF Spaces shows a build log. The first build takes ~3-5 minutes (downloads depen
 
 ## 🛣️ Roadmap
 
-- [ ] AI-generated cover image via Pollinations AI (free, no key needed)
-- [ ] LangGraph checkpointing for session memory across multiple queries
-- [ ] Upload a PDF/document as additional research context
-- [ ] Model selector in UI (Groq / Gemini / OpenRouter)
-- [ ] Auto-generate PowerPoint slide deck from the report
-- [ ] LangSmith evaluation dashboard integration
+<img width="1774" height="887" alt="10_Future_Roadmap svg" src="https://github.com/user-attachments/assets/89621d24-de62-4e34-bb40-4064da448ce1" />
+
 
 ---
 
@@ -507,8 +424,20 @@ MIT License — free to use, modify, and distribute with attribution.
 ## 🙏 Acknowledgements
 
 [LangGraph](https://langchain-ai.github.io/langgraph/) · [Groq](https://groq.com) · [Google Gemini](https://aistudio.google.com) · [Tavily](https://tavily.com) · [Plotly](https://plotly.com) · [Streamlit](https://streamlit.io) · [ReportLab](https://www.reportlab.com) · [LangSmith](https://smith.langchain.com)
+<img width="864" height="1821" alt="08_Tech_Stack svg" src="https://github.com/user-attachments/assets/4fe4bb59-f9b9-4a21-9b04-681a4be7cd07" />
 
 ---
+
+## 🖥 UI Screenshots
+<img width="1878" height="916" alt="Home png" src="https://github.com/user-attachments/assets/a6b3e244-c1d8-459c-9766-627c78fb909d" />
+<img width="1913" height="920" alt="Pipeline png" src="https://github.com/user-attachments/assets/eacf76e8-076d-4e39-9c01-4847d9fb5466" />
+<img width="1301" height="847" alt="Charts png" src="https://github.com/user-attachments/assets/0cbfaa33-6473-4575-aa48-c725b0c30b7f" />
+<img width="1902" height="822" alt="Report png" src="https://github.com/user-attachments/assets/97eb441b-fc69-46e2-ae90-5b6f369b7c06" />
+<img width="1070" height="731" alt="PDF png" src="https://github.com/user-attachments/assets/d73cfd02-8ea5-4348-ac2f-761b6a8c83e0" />
+<img width="1032" height="626" alt="Trace png" src="https://github.com/user-attachments/assets/b6bb1bbb-a88d-40b4-87a6-949e58bace25" />
+
+
+
 
 ## 👨‍💻 Connect With Me
 
@@ -518,6 +447,8 @@ MIT License — free to use, modify, and distribute with attribution.
 [💼 LinkedIn](https://www.linkedin.com/in/vishal-lazrus/) &nbsp;•&nbsp;
 [🐙 GitHub](https://github.com/vishal815)
 
+[ GitHub](<img width="437" height="436" alt="Github_QR png" src="https://github.com/user-attachments/assets/256d242b-be4d-41fe-b2d5-b40b2b236341" />)
+[Live](<img width="440" height="437" alt="live_hosted png" src="https://github.com/user-attachments/assets/f4605b10-3281-48c3-8dbd-bdca00cd1382" />)
 **If this helped you learn something, give it a ⭐ on GitHub!**
 
 *Built by Vishal Lazrus during AI Internship at Infosys, June 2026*
