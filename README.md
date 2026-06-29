@@ -310,65 +310,8 @@ Opens at `http://localhost:8501`
 
 ---
 
-## 🐳 Deploy to Hugging Face Spaces
+## 🐳 Deploy to Hugging Face Spaces and Railway
 
-The project ships with a ready `Dockerfile` that targets port 7860 (Hugging Face's required port).
-
-### Step 1 — Push to GitHub
-
-```bash
-git add .
-git commit -m "Initial ResearchPilot AI upload"
-git push origin main
-```
-
-### Step 2 — Create a Hugging Face Space
-
-1. Go to [huggingface.co/spaces](https://huggingface.co/spaces)
-2. Click **Create new Space**
-3. Set:
-   - **Space name:** `ResearchPilot-AI`
-   - **License:** MIT
-   - **SDK:** **Docker** ← important, not Streamlit
-   - **Visibility:** Public
-
-### Step 3 — Add API Keys as Secrets
-
-> ⚠️ Never put real API keys in code or `Dockerfile`. Use HF Secrets — they're injected as environment variables at runtime, invisible in the repo.
-
-Go to your Space → **Settings** → **Repository secrets** → **New secret**:
-
-| Secret Name | Value | Required? |
-|---|---|---|
-| `GROQ_API_KEY` | Your Groq key (`gsk_...`) | ✅ Required |
-| `TAVILY_API_KEY` | Your Tavily key (`tvly_...`) | ✅ Required |
-| `LANGCHAIN_API_KEY` | Your LangSmith key (`lsv2_...`) | Optional |
-| `LANGCHAIN_TRACING_V2` | `true` | Optional (with LangSmith) |
-| `GOOGLE_API_KEY` | Your Gemini key | Optional fallback |
-
-**Why secrets, not `.env`?** HF Spaces clones your repo publicly — your `.env` must never be committed (it's in `.gitignore`). Secrets are stored encrypted in HF's vault and injected at container start time.
-
-Your `Dockerfile` already sets:
-```dockerfile
-ENV LANGCHAIN_PROJECT="researchpilot-ai"
-```
-This constant is safe to hardcode because it's not sensitive — it's just the project name in LangSmith's dashboard.
-
-The `LANGCHAIN_TRACING_V2=true` env var activates LangSmith auto-tracing — set it as a secret alongside your `LANGCHAIN_API_KEY`. Once both are set, every run appears in your [LangSmith dashboard](https://smith.langchain.com) showing exactly which node ran, how long each LLM call took, and the full prompt/response for every agent call.
-
-### Step 4 — Link GitHub Repo
-
-In your Space → **Files** → **Connect to GitHub repo** → select your repo → HF auto-builds on every push.
-
-Or push directly to the HF Space's git remote:
-```bash
-git remote add hf https://huggingface.co/spaces/YOUR_HF_USERNAME/ResearchPilot-AI
-git push hf main
-```
-
-### Step 5 — Wait for Build
-
-HF Spaces shows a build log. The first build takes ~3-5 minutes (downloads dependencies). After that, code-only pushes rebuild in ~60 seconds.
 <img width="1024" height="1536" alt="09_Deployment svg" src="https://github.com/user-attachments/assets/287a0d95-78bf-423d-9073-fe3dadb9c93a" />
 
 ---
@@ -424,6 +367,7 @@ MIT License — free to use, modify, and distribute with attribution.
 ## 🙏 Acknowledgements
 
 [LangGraph](https://langchain-ai.github.io/langgraph/) · [Groq](https://groq.com) · [Google Gemini](https://aistudio.google.com) · [Tavily](https://tavily.com) · [Plotly](https://plotly.com) · [Streamlit](https://streamlit.io) · [ReportLab](https://www.reportlab.com) · [LangSmith](https://smith.langchain.com)
+
 <img width="864" height="1821" alt="08_Tech_Stack svg" src="https://github.com/user-attachments/assets/4fe4bb59-f9b9-4a21-9b04-681a4be7cd07" />
 
 ---
@@ -447,10 +391,12 @@ MIT License — free to use, modify, and distribute with attribution.
 [💼 LinkedIn](https://www.linkedin.com/in/vishal-lazrus/) &nbsp;•&nbsp;
 [🐙 GitHub](https://github.com/vishal815)
 
-[ GitHub](<img width="437" height="436" alt="Github_QR png" src="https://github.com/user-attachments/assets/256d242b-be4d-41fe-b2d5-b40b2b236341" />)
-[Live](<img width="440" height="437" alt="live_hosted png" src="https://github.com/user-attachments/assets/f4605b10-3281-48c3-8dbd-bdca00cd1382" />)
 **If this helped you learn something, give it a ⭐ on GitHub!**
 
 *Built by Vishal Lazrus during AI Internship at Infosys, June 2026*
 
 </div>
+<img width="440" height="437" alt="live_hosted png" src="https://github.com/user-attachments/assets/714dec8e-031e-4eba-b048-969891e8a43b" />
+<img width="437" height="436" alt="Github_QR png" src="https://github.com/user-attachments/assets/1952f869-7455-4c51-9656-6f675f817c5a" />
+
+
